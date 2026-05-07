@@ -59,25 +59,25 @@ This system processes data from fault indicators that periodically send status u
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                    Electrical Grid Monitoring Devices                   │
-│                    (Fault Indicators)                                    │
+│                    (Fault Indicators)                                   │
 └────────────────────────────┬────────────────────────────────────────────┘
                              │
                              │ Raw TCP Data
                              ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │              Async Socket Server (Python TCP Server)                    │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │  Receives raw device data → Parses → Reformats → JSON            │  │
-│  │  Repository: https://github.com/Smart-Grid-Solutions/             │  │
-│  │              Async-Socket-Server                                  │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  Receives raw device data → Parses → Reformats → JSON            │   │
+│  │  Repository: https://github.com/Smart-Grid-Solutions/            │   │
+│  │              Async-Socket-Server                                 │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
 └────────────────────────────┬────────────────────────────────────────────┘
                              │
                              │ Formatted JSON Message
                              ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                         AWS SQS Queue                                    │
-│                  (DEVICE_DATA_SQS_QUEUE_URL)                             │
+│                         AWS SQS Queue                                   │
+│                  (DEVICE_DATA_SQS_QUEUE_URL)                            │
 └────────────────────────────┬────────────────────────────────────────────┘
                              │
                              │ JSON Message Body
@@ -85,14 +85,14 @@ This system processes data from fault indicators that periodically send status u
                              ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                    SQS Service (sqs.service.ts)                         │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │  listenForMessages() → receiveMessage() → saveToDatabase()       │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
-│                                                                          │
-│  Transformation Stages:                                                  │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  listenForMessages() → receiveMessage() → saveToDatabase()       │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  Transformation Stages:                                                 │
 │  1. Parse JSON message body (already formatted by Async Socket Server)  │
 │  2. Model replacement (MODEL_REPLACEMENTS map)                          │
-│  3. Enrich with DeviceInformation (CurrentName, CurrentLat, CurrentLong) │
+│  3. Enrich with DeviceInformation (CurrentName, CurrentLat, CurrentLong)│
 │  4. Filter new events (filterNewEvents)                                 │
 │  5. Compute ActualOngoingFault                                          │
 └────────────────────────────┬────────────────────────────────────────────┘
@@ -101,58 +101,58 @@ This system processes data from fault indicators that periodically send status u
                              ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                    Database Service (db.service.ts)                     │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │  createDeviceRecord() → DeviceRecord                            │  │
-│  │  bulkCreateEventRecords() → EventRecord/DM1EventRecord          │  │
-│  │  createDeviceCurrents() → DeviceCurrents                        │  │
-│  │  computeActualOngoingFault() → ActualOngoingFault calculation  │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  createDeviceRecord() → DeviceRecord                             │   │
+│  │  bulkCreateEventRecords() → EventRecord/DM1EventRecord           │   │
+│  │  createDeviceCurrents() → DeviceCurrents                         │   │
+│  │  computeActualOngoingFault() → ActualOngoingFault calculation    │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
 └────────────────────────────┬────────────────────────────────────────────┘
                              │
                              │ Stored Records
                              ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                    PostgreSQL Database                                  │
-│  ┌──────────────────────┐  ┌──────────────────────┐                  │
-│  │  device_records      │  │  event_records        │                  │
-│  │  (Table)            │  │  (Table)              │                  │
-│  └──────────────────────┘  └──────────────────────┘                  │
-│  ┌──────────────────────┐  ┌──────────────────────┐                  │
-│  │  dm1_event_records   │  │  device_currents     │                  │
-│  │  (Table)            │  │  (Table)              │                  │
-│  └──────────────────────┘  └──────────────────────┘                  │
-│  ┌──────────────────────┐                                             │
-│  │  device_information  │                                             │
-│  │  (Table)            │                                             │
-│  └──────────────────────┘                                             │
+│  ┌──────────────────────┐  ┌──────────────────────┐                     │
+│  │  device_records      │  │  event_records       │                     │
+│  │  (Table)             │  │  (Table)             │                     │
+│  └──────────────────────┘  └──────────────────────┘                     │
+│  ┌──────────────────────┐  ┌──────────────────────┐                     │
+│  │  dm1_event_records   │  │  device_currents     │                     │
+│  │  (Table)             │  │  (Table)             │                     │
+│  └──────────────────────┘  └──────────────────────┘                     │
+│  ┌──────────────────────┐                                               │
+│  │  device_information  │                                               │
+│  │  (Table)             │                                               │
+│  └──────────────────────┘                                               │
 └────────────────────────────┬────────────────────────────────────────────┘
                              │
                              │ Query Results
                              ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│              Device Records Service (device-records.service.ts)        │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │  Data Formatting & Transformation:                               │  │
-│  │  - Timezone conversion (UTC → User Timezone)                     │  │
-│  │  - Enum value mapping (Ongoing_fault, State, FaultType)          │  │
-│  │  - Field masking (MaskFaultDetails)                               │  │
-│  │  - Date formatting (YYYY-MMM-DD hh:mm A)                        │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
+│              Device Records Service (device-records.service.ts)         │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  Data Formatting & Transformation:                               │   │
+│  │  - Timezone conversion (UTC → User Timezone)                     │   │
+│  │  - Enum value mapping (Ongoing_fault, State, FaultType)          │   │
+│  │  - Field masking (MaskFaultDetails)                              │   │
+│  │  - Date formatting (YYYY-MMM-DD hh:mm A)                         │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
 └────────────────────────────┬────────────────────────────────────────────┘
                              │
                              │ Formatted Data
                              ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│              Device Records Controller (device-records.controller.ts)  │
-│  ┌──────────────────────────────────────────────────────────────────┐  │
-│  │  REST API Endpoints:                                             │  │
-│  │  GET /device-records/data-log                                     │  │
-│  │  GET /device-records/device-information/data-log/:imeiNumber     │  │
-│  │  GET /device-records/device-information/events/:imeiNumber       │  │
-│  │  GET /device-records/device-information/load-history/:imeiNumber │  │
-│  │  GET /device-records/critical-data                               │  │
-│  │  GET /device-records/map-data                                     │  │
-│  └──────────────────────────────────────────────────────────────────┘  │
+│              Device Records Controller (device-records.controller.ts)   │
+│  ┌──────────────────────────────────────────────────────────────────┐   │
+│  │  REST API Endpoints:                                             │   │
+│  │  GET /device-records/data-log                                    │   │
+│  │  GET /device-records/device-information/data-log/:imeiNumber     │   │
+│  │  GET /device-records/device-information/events/:imeiNumber       │   │
+│  │  GET /device-records/device-information/load-history/:imeiNumber │   │
+│  │  GET /device-records/critical-data                               │   │
+│  │  GET /device-records/map-data                                    │   │
+│  └──────────────────────────────────────────────────────────────────┘   │
 └────────────────────────────┬────────────────────────────────────────────┘
                              │
                              │ JSON Response
