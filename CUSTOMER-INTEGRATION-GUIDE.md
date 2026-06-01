@@ -53,13 +53,13 @@ Each recipe is described in detail below, including architecture, data flow, wha
 
 - **Fixed IP addresses** for your DNP3 master (optional, for IP allow-listing as an additional layer of security).
 - **DNP3 master configuration**: outstation address, class polling / integrity scan settings.
-- **TLS client certificate**: SGS provides a certificate package during onboarding. See the [Getting Connected](../dnp3-device-portal/docs/security-implementation-guide.md) guide for certificate setup details.
+- **TLS client certificate**: SGS provides a certificate package during onboarding. Please contact SGS for certificate setup details.
 
 ### Key Security Considerations
 
 - **Mutual TLS (mTLS)**: All connections require mTLS. Both the portal and your DNP3 master present and validate certificates during the TLS handshake. Without a valid client certificate, the connection is refused before any DNP3 data is exchanged. TLS 1.3 is the default; TLS 1.2 is available if your DNP3 master requires it.
 - **IP allow-listing (optional)**: As an additional layer, SGS can restrict access to the public endpoint to your declared IP addresses.
-- **Certificate management**: Certificates should be rotated on a defined schedule. SGS coordinates rotation in advance. See [Getting Connected](../dnp3-device-portal/docs/security-implementation-guide.md) for the full certificate lifecycle.
+- **Certificate management**: Certificates should be rotated on a defined schedule. SGS coordinates rotation in advance. Please contact SGS for the full certificate lifecycle.
 
 ---
 
