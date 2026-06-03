@@ -2,7 +2,7 @@
 
 This document provides the technical details needed to connect to the SGS DNP3 Device Portal. It is intended for network engineers, SCADA engineers, and IT security staff responsible for configuring the customer-side connection.
 
-For the threat model, risk assessment, and security architecture overview, see the [Security Architecture and Threat Model](security-overview.md).
+For the threat model, risk assessment, and security architecture overview, please contact SGS.
 
 ## Table of Contents
 
